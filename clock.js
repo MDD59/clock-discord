@@ -2,14 +2,17 @@
 //////  HORLOGE POUR DISCORD  //////
 /////////// PAR # BASILE ///////////
 ////////////////////////////////////
+// Mise à jour du 29/12/2024
+require('dotenv').config();
+
 const { Client, GatewayIntentBits, REST, Routes } = require('discord.js');
 const schedule = require('node-schedule');
 const { spawn } = require('child_process');
 
-const TOKEN = 'MTI0OTc1MzU******TAyNzcwNQ.GZylOH.******_TVk7TCOEJsuxOSVpynIcpnece******';
-const CLIENT_ID = '124975**838810277**';
-const GUILD_ID = '12235**4571036222**';
-const CHANNEL_ID = '12**3905487669166**';
+const TOKEN = process.env.TOKEN;
+const CLIENT_ID = process.env.CLIENT_ID;
+const GUILD_ID = process.env.GUILD_ID;
+const CHANNEL_ID = process.env.CHANNEL_ID;
 
 const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages] });
 
@@ -17,38 +20,36 @@ let language = 'FR'; // Langue par défaut
 
 client.once('ready', () => {
     console.log(`Connecté en tant que ${client.user.tag}`);
-    
+
     // Définir les commandes /horloge, /vider-salon et /restart
     const rest = new REST({ version: '10' }).setToken(TOKEN);
 
-    (async () => {
+    (async() => {
         try {
             console.log('Début du refresh des commandes d\'application.');
-            
+
             await rest.put(
-                Routes.applicationGuildCommands(CLIENT_ID, GUILD_ID),
-                { body: [
-                    {
-                        name: 'horloge',
-                        description: 'Change la langue de l\'horloge',
-                        options: [
-                            {
+                Routes.applicationGuildCommands(CLIENT_ID, GUILD_ID), {
+                    body: [{
+                            name: 'langue',
+                            description: 'Change la langue de l\'horloge',
+                            options: [{
                                 type: 3,
                                 name: 'langue',
                                 description: 'Langue à utiliser (EN ou FR)',
                                 required: true
-                            }
-                        ]
-                    },
-                    {
-                        name: 'vider-salon',
-                        description: 'Supprime tous les messages de l\'horloge dans le canal spécifié'
-                    },
-                    {
-                        name: 'restart',
-                        description: 'Redémarre le bot'
-                    }
-                ] },
+                            }]
+                        },
+                        {
+                            name: 'vider-salon',
+                            description: 'Supprime tous les messages de l\'horloge dans le canal spécifié'
+                        },
+                        {
+                            name: 'restart',
+                            description: 'Redémarre le bot'
+                        }
+                    ]
+                },
             );
 
             console.log('Les commandes d\'application ont été rafraîchies.');
@@ -67,7 +68,7 @@ client.once('ready', () => {
             channel.send(message);
         } else {
             console.log('Canal non trouvé.');
-    
+
         }
     });
 });
@@ -116,4 +117,5 @@ function restartBot() {
     process.exit();
 }
 
+client.login(TOKEN);
 client.login(TOKEN);
